@@ -1,7 +1,11 @@
-import React from 'react';
+import React, { useRef, useState } from 'react';
+import html2canvas from 'html2canvas';
 import './PlayerCard.css';
 
 const PlayerCard = ({ matchData }) => {
+  const cardRef = useRef(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  
   const {
     playerName,
     position,
@@ -53,9 +57,124 @@ const PlayerCard = ({ matchData }) => {
     if (rating >= 4) return 'ABAIXO';
     return 'RUIM';
   };
+  
+  const generateImage = async () => {
+    if (!cardRef.current || isGenerating) return null;
+    
+    setIsGenerating(true);
+    
+    try {
+      // Aguarda um pouco para garantir que o DOM está estável
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      const canvas = await html2canvas(cardRef.current, {
+        backgroundColor: '#1a1a2e', // Cor de fundo sólida para garantir consistência
+        scale: 2, // Maior qualidade
+        useCORS: true,
+        allowTaint: true,
+        scrollX: 0,
+        scrollY: 0,
+        width: cardRef.current.offsetWidth,
+        height: cardRef.current.offsetHeight,
+        ignoreElements: (element) => {
+          // Ignora elementos que podem causar problemas
+          return element.classList?.contains('ignore-capture');
+        }
+      });
+      
+      return canvas;
+    } catch (error) {
+      console.error('Erro ao gerar imagem:', error);
+      throw error;
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const shareAsImage = async () => {
+    try {
+      const canvas = await generateImage();
+      if (!canvas) return;
+      
+      canvas.toBlob((blob) => {
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'futscore-card.png', { type: 'image/png' })] })) {
+          // Usar Web Share API se disponível (mobile)
+          const file = new File([blob], 'futscore-card.png', { type: 'image/png' });
+          navigator.share({
+            title: 'Meu Card FutScore',
+            text: `Confira minha performance: ${playerName} - Nota ${rating}`,
+            files: [file]
+          }).catch(err => {
+            if (err.name !== 'AbortError') {
+              console.error('Erro ao compartilhar:', err);
+              downloadImage(blob);
+            }
+          });
+        } else {
+          // Fallback: download da imagem
+          downloadImage(blob);
+        }
+      }, 'image/png', 0.9);
+      
+    } catch (error) {
+      console.error('Erro ao gerar imagem:', error);
+      alert('Erro ao gerar imagem. Tente novamente.');
+    }
+  };
+  
+  const downloadImage = (blob) => {
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `futscore-${playerName.replace(/\s+/g, '_')}-${formatDate(matchDate).replace(/\//g, '_')}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+  
+  const copyToClipboard = async () => {
+    try {
+      const canvas = await generateImage();
+      if (!canvas) return;
+      
+      canvas.toBlob(async (blob) => {
+        try {
+          if (navigator.clipboard && window.ClipboardItem) {
+            const item = new ClipboardItem({ 'image/png': blob });
+            await navigator.clipboard.write([item]);
+            
+            // Feedback visual
+            const button = document.querySelector('.copy-btn');
+            if (button) {
+              button.classList.add('copied');
+              const originalText = button.textContent;
+              button.textContent = '✓';
+              setTimeout(() => {
+                button.textContent = originalText;
+                button.classList.remove('copied');
+              }, 2000);
+            }
+          } else {
+            // Fallback: download se clipboard não estiver disponível
+            downloadImage(blob);
+            alert('Imagem baixada! (Clipboard não suportado neste navegador)');
+          }
+        } catch (clipboardError) {
+          console.error('Erro ao copiar:', clipboardError);
+          downloadImage(blob);
+          alert('Imagem baixada! (Erro ao copiar para clipboard)');
+        }
+      }, 'image/png', 0.9);
+      
+    } catch (error) {
+      console.error('Erro ao gerar imagem para clipboard:', error);
+      alert('Erro ao processar imagem. Tente novamente.');
+    }
+  };
 
   return (
-    <div className="player-card">
+    <div className="player-card" ref={cardRef}>
       {/* Header do Card */}
       <div className="card-header">
         <div className="match-info">
@@ -165,8 +284,22 @@ const PlayerCard = ({ matchData }) => {
         <div className="share-options">
           <span className="share-text">Compartilhar</span>
           <div className="share-buttons">
-            <span>📱</span>
-            <span>💾</span>
+            <button 
+              className={`share-btn copy-btn ${isGenerating ? 'loading' : ''}`}
+              onClick={copyToClipboard}
+              title="Copiar imagem"
+              disabled={isGenerating}
+            >
+              {isGenerating ? '⏳' : '📋'}
+            </button>
+            <button 
+              className={`share-btn download-btn ${isGenerating ? 'loading' : ''}`}
+              onClick={shareAsImage}
+              title="Baixar/Compartilhar imagem"
+              disabled={isGenerating}
+            >
+              {isGenerating ? '⏳' : '📱'}
+            </button>
           </div>
         </div>
       </div>
