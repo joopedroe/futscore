@@ -1,10 +1,11 @@
 import React, { useRef, useState } from 'react';
-import html2canvas from 'html2canvas';
+import ImageGenerator from '../services/imageGenerator';
 import './PlayerCard.css';
 
 const PlayerCard = ({ matchData }) => {
   const cardRef = useRef(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const imageGenerator = new ImageGenerator();
   
   const {
     playerName,
@@ -58,118 +59,94 @@ const PlayerCard = ({ matchData }) => {
     return 'RUIM';
   };
   
-  const generateImage = async () => {
-    if (!cardRef.current || isGenerating) return null;
+  const generateProfessionalImage = async () => {
+    if (isGenerating) return;
     
     setIsGenerating(true);
     
     try {
-      // Aguarda um pouco para garantir que o DOM está estável
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Generate the professional canvas-based image
+      const canvas = await imageGenerator.generatePlayerCard(matchData);
       
-      const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: '#1a1a2e', // Cor de fundo sólida para garantir consistência
-        scale: 2, // Maior qualidade
-        useCORS: true,
-        allowTaint: true,
-        scrollX: 0,
-        scrollY: 0,
-        width: cardRef.current.offsetWidth,
-        height: cardRef.current.offsetHeight,
-        ignoreElements: (element) => {
-          // Ignora elementos que podem causar problemas
-          return element.classList?.contains('ignore-capture');
-        }
-      });
+      // Create filename
+      const filename = `futscore-${playerName.replace(/\s+/g, '_')}-${formatDate(matchDate).replace(/\//g, '_')}.png`;
       
-      return canvas;
+      // Download the image
+      await imageGenerator.downloadImage(canvas, filename);
+      
+      // Show success feedback
+      showSuccessFeedback();
+      
     } catch (error) {
-      console.error('Erro ao gerar imagem:', error);
-      throw error;
+      console.error('Erro ao gerar imagem profissional:', error);
+      alert('Erro ao gerar imagem. Tente novamente.');
     } finally {
       setIsGenerating(false);
     }
   };
 
-  const shareAsImage = async () => {
+  const shareImage = async () => {
+    if (isGenerating) return;
+    
+    setIsGenerating(true);
+    
     try {
-      const canvas = await generateImage();
-      if (!canvas) return;
-      
-      canvas.toBlob((blob) => {
-        if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'futscore-card.png', { type: 'image/png' })] })) {
-          // Usar Web Share API se disponível (mobile)
-          const file = new File([blob], 'futscore-card.png', { type: 'image/png' });
-          navigator.share({
-            title: 'Meu Card FutScore',
-            text: `Confira minha performance: ${playerName} - Nota ${rating}`,
-            files: [file]
-          }).catch(err => {
-            if (err.name !== 'AbortError') {
-              console.error('Erro ao compartilhar:', err);
-              downloadImage(blob);
-            }
-          });
-        } else {
-          // Fallback: download da imagem
-          downloadImage(blob);
-        }
-      }, 'image/png', 0.9);
-      
-    } catch (error) {
-      console.error('Erro ao gerar imagem:', error);
-      alert('Erro ao gerar imagem. Tente novamente.');
-    }
-  };
-  
-  const downloadImage = (blob) => {
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `futscore-${playerName.replace(/\s+/g, '_')}-${formatDate(matchDate).replace(/\//g, '_')}.png`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
-  };
-  
-  const copyToClipboard = async () => {
-    try {
-      const canvas = await generateImage();
-      if (!canvas) return;
+      // Generate the professional canvas-based image
+      const canvas = await imageGenerator.generatePlayerCard(matchData);
       
       canvas.toBlob(async (blob) => {
         try {
-          if (navigator.clipboard && window.ClipboardItem) {
-            const item = new ClipboardItem({ 'image/png': blob });
-            await navigator.clipboard.write([item]);
+          if (navigator.share && navigator.canShare) {
+            const file = new File([blob], 'futscore-card.png', { type: 'image/png' });
             
-            // Feedback visual
-            const button = document.querySelector('.copy-btn');
-            if (button) {
-              button.classList.add('copied');
-              const originalText = button.textContent;
-              button.textContent = '✓';
-              setTimeout(() => {
-                button.textContent = originalText;
-                button.classList.remove('copied');
-              }, 2000);
+            // Check if files can be shared
+            if (navigator.canShare({ files: [file] })) {
+              await navigator.share({
+                title: 'Meu Card FutScore',
+                text: `Confira minha performance: ${playerName} - Nota ${rating}`,
+                files: [file]
+              });
+            } else {
+              // Fallback to download if file sharing not supported
+              const filename = `futscore-${playerName.replace(/\s+/g, '_')}-${formatDate(matchDate).replace(/\//g, '_')}.png`;
+              await imageGenerator.downloadImage(canvas, filename);
+              showSuccessFeedback();
             }
           } else {
-            // Fallback: download se clipboard não estiver disponível
-            downloadImage(blob);
-            alert('Imagem baixada! (Clipboard não suportado neste navegador)');
+            // Fallback to download for unsupported browsers
+            const filename = `futscore-${playerName.replace(/\s+/g, '_')}-${formatDate(matchDate).replace(/\//g, '_')}.png`;
+            await imageGenerator.downloadImage(canvas, filename);
+            showSuccessFeedback();
           }
-        } catch (clipboardError) {
-          console.error('Erro ao copiar:', clipboardError);
-          downloadImage(blob);
-          alert('Imagem baixada! (Erro ao copiar para clipboard)');
+        } catch (shareError) {
+          if (shareError.name !== 'AbortError') {
+            console.error('Erro ao compartilhar:', shareError);
+            // Fallback to download
+            const filename = `futscore-${playerName.replace(/\s+/g, '_')}-${formatDate(matchDate).replace(/\//g, '_')}.png`;
+            await imageGenerator.downloadImage(canvas, filename);
+            showSuccessFeedback();
+          }
         }
-      }, 'image/png', 0.9);
+      }, 'image/png', 0.95);
       
     } catch (error) {
-      console.error('Erro ao gerar imagem para clipboard:', error);
-      alert('Erro ao processar imagem. Tente novamente.');
+      console.error('Erro ao gerar imagem para compartilhamento:', error);
+      alert('Erro ao gerar imagem. Tente novamente.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const showSuccessFeedback = () => {
+    const button = document.querySelector('.download-btn');
+    if (button) {
+      button.classList.add('success');
+      const originalText = button.innerHTML;
+      button.innerHTML = '✓';
+      setTimeout(() => {
+        button.innerHTML = originalText;
+        button.classList.remove('success');
+      }, 2000);
     }
   };
 
@@ -282,20 +259,20 @@ const PlayerCard = ({ matchData }) => {
           <span className="app-name">FutScore</span>
         </div>
         <div className="share-options">
-          <span className="share-text">Compartilhar</span>
+          <span className="share-text">Baixar Imagem</span>
           <div className="share-buttons">
             <button 
-              className={`share-btn copy-btn ${isGenerating ? 'loading' : ''}`}
-              onClick={copyToClipboard}
-              title="Copiar imagem"
+              className={`share-btn download-btn ${isGenerating ? 'loading' : ''}`}
+              onClick={generateProfessionalImage}
+              title="Baixar imagem profissional"
               disabled={isGenerating}
             >
-              {isGenerating ? '⏳' : '📋'}
+              {isGenerating ? '⏳' : '💾'}
             </button>
             <button 
-              className={`share-btn download-btn ${isGenerating ? 'loading' : ''}`}
-              onClick={shareAsImage}
-              title="Baixar/Compartilhar imagem"
+              className={`share-btn share-btn-mobile ${isGenerating ? 'loading' : ''}`}
+              onClick={shareImage}
+              title="Compartilhar imagem"
               disabled={isGenerating}
             >
               {isGenerating ? '⏳' : '📱'}
