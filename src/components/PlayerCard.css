@@ -338,6 +338,19 @@
   color: #4caf50 !important;
 }
 
+.download-btn.success {
+  background: rgba(76, 175, 80, 0.2) !important;
+  border-color: rgba(76, 175, 80, 0.4) !important;
+  color: #4caf50 !important;
+  animation: successPulse 0.5s ease-out;
+}
+
+@keyframes successPulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+
 /* Animação para loading */
 .share-btn.loading {
   animation: pulse 1.5s infinite;
