@@ -300,6 +300,96 @@
   gap: 8px;
 }
 
+.share-btn {
+  width: 35px;
+  height: 35px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 16px;
+  color: inherit;
+  padding: 0;
+  outline: none;
+}
+
+.share-btn:hover {
+  background: rgba(102, 126, 234, 0.2);
+  transform: scale(1.1);
+  border-color: rgba(102, 126, 234, 0.4);
+}
+
+.share-btn:active {
+  transform: scale(0.95);
+}
+
+.share-btn:focus {
+  box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.5);
+}
+
+/* Estados específicos para feedback */
+.copy-btn.copied {
+  background: rgba(76, 175, 80, 0.2) !important;
+  border-color: rgba(76, 175, 80, 0.4) !important;
+  color: #4caf50 !important;
+}
+
+/* Animação para loading */
+.share-btn.loading {
+  animation: pulse 1.5s infinite;
+  cursor: wait;
+}
+
+.share-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.7; transform: scale(1.05); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* Melhorias na acessibilidade */
+.share-btn:focus-visible {
+  outline: 2px solid rgba(102, 126, 234, 0.8);
+  outline-offset: 2px;
+}
+
+/* Tooltip customizado */
+.share-btn {
+  position: relative;
+}
+
+.share-btn:hover::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  z-index: 1000;
+  opacity: 0;
+  animation: fadeInTooltip 0.3s ease forwards;
+}
+
+@keyframes fadeInTooltip {
+  from { opacity: 0; transform: translateX(-50%) translateY(5px); }
+  to { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* Remove os antigos estilos dos spans */
 .share-buttons span {
   width: 30px;
   height: 30px;
