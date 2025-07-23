@@ -3,10 +3,12 @@ import './App.css';
 import MatchForm from './components/MatchForm';
 import ModernPlayerCard from './components/ModernPlayerCard';
 import Header from './components/Header';
+import AIMatchAnalyzer from './components/AIMatchAnalyzer';
 
 function App() {
   const [matchData, setMatchData] = useState(null);
   const [showCard, setShowCard] = useState(false);
+  const [showAIAnalyzer, setShowAIAnalyzer] = useState(false);
 
   const handleMatchSubmit = (data) => {
     // Calcular nota baseada na performance
@@ -15,9 +17,25 @@ function App() {
     
     setMatchData(matchWithRating);
     setShowCard(true);
+    setShowAIAnalyzer(false);
+  };
+
+  const handleAIAnalysisComplete = (aiData) => {
+    // Quando a IA completar a análise, preencher o formulário
+    const rating = calculateRating(aiData);
+    const matchWithRating = { ...aiData, rating };
+    
+    setMatchData(matchWithRating);
+    setShowCard(true);
+    setShowAIAnalyzer(false);
   };
 
   const calculateRating = (data) => {
+    // Se já houver uma nota da IA, usar ela
+    if (data.matchRating !== undefined && data.matchRating !== null) {
+      return data.matchRating;
+    }
+    
     let score = 5; // Nota base
     
     // Gols (peso alto)
@@ -27,22 +45,23 @@ function App() {
     score += data.assists * 1.2;
     
     // Passes certos
-    const passAccuracy = (data.successfulPasses / data.totalPasses) * 100;
-    if (passAccuracy >= 90) score += 1;
-    else if (passAccuracy >= 80) score += 0.5;
-    else if (passAccuracy < 60) score -= 0.5;
+    if (data.totalPasses > 0) {
+      const passAccuracy = (data.successfulPasses / data.totalPasses) * 100;
+      if (passAccuracy >= 90) score += 1;
+      else if (passAccuracy >= 80) score += 0.5;
+      else if (passAccuracy < 60) score -= 0.5;
+    }
     
     // Cartões (penalizam)
     score -= data.yellowCards * 0.5;
     score -= data.redCards * 2;
     
     // Duelos ganhos
-    const duelWinRate = (data.duelsWon / data.totalDuels) * 100;
-    if (duelWinRate >= 70) score += 0.5;
-    else if (duelWinRate < 40) score -= 0.3;
-    
-    // Nota da partida subjetiva
-    score += (data.matchRating - 5) * 0.3;
+    if (data.totalDuels > 0) {
+      const duelWinRate = (data.duelsWon / data.totalDuels) * 100;
+      if (duelWinRate >= 70) score += 0.5;
+      else if (duelWinRate < 40) score -= 0.3;
+    }
     
     // Limitar entre 0 e 10
     return Math.max(0, Math.min(10, Math.round(score * 10) / 10));
@@ -51,6 +70,11 @@ function App() {
   const handleNewMatch = () => {
     setShowCard(false);
     setMatchData(null);
+    setShowAIAnalyzer(false);
+  };
+
+  const toggleAIAnalyzer = () => {
+    setShowAIAnalyzer(!showAIAnalyzer);
   };
 
   return (
@@ -59,7 +83,30 @@ function App() {
         <Header />
         
         {!showCard ? (
-          <MatchForm onSubmit={handleMatchSubmit} />
+          <>
+            {/* Botão para alternar entre formulário manual e análise com IA */}
+            <div className="mode-toggle">
+              <button 
+                className={`mode-btn ${!showAIAnalyzer ? 'active' : ''}`}
+                onClick={() => setShowAIAnalyzer(false)}
+              >
+                📝 Entrada Manual
+              </button>
+              <button 
+                className={`mode-btn ${showAIAnalyzer ? 'active' : ''}`}
+                onClick={() => setShowAIAnalyzer(true)}
+              >
+                🤖 Análise com IA
+              </button>
+            </div>
+
+            {/* Mostrar componente baseado no modo selecionado */}
+            {showAIAnalyzer ? (
+              <AIMatchAnalyzer onAnalysisComplete={handleAIAnalysisComplete} />
+            ) : (
+              <MatchForm onSubmit={handleMatchSubmit} />
+            )}
+          </>
         ) : (
           <div className="card-section">
             <ModernPlayerCard matchData={matchData} />

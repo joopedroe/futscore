@@ -212,18 +212,52 @@
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* Heatmap */
+/* Heatmap Section */
 .heatmap-section {
-  position: absolute;
-  bottom: 80px;
-  left: 30px;
-  right: 30px;
-  height: 120px;
+  margin: 20px 0;
+}
+
+/* AI Analysis Section */
+.ai-analysis-section {
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 12px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(10px);
+  padding: 20px;
+  margin: 20px 0;
   border: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+.ai-analysis-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ai-icon {
+  font-size: 1.5rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+}
+
+.ai-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #ffffff;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.ai-analysis-text {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.95rem;
+  line-height: 1.6;
+  margin: 0;
+  font-style: italic;
 }
 
 .field-heatmap {

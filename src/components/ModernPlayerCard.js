@@ -189,6 +189,17 @@ const ModernPlayerCard = ({ matchData }) => {
           </div>
         </div>
 
+        {/* Análise da IA (se disponível) */}
+        {matchData.aiAnalysis && (
+          <div className="ai-analysis-section">
+            <div className="ai-analysis-header">
+              <span className="ai-icon">🤖</span>
+              <span className="ai-title">Análise da IA</span>
+            </div>
+            <p className="ai-analysis-text">{matchData.aiAnalysis}</p>
+          </div>
+        )}
+
         {/* Heatmap visual */}
         <div className="heatmap-section">
           <div className="field-heatmap">
