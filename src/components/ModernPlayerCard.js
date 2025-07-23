@@ -25,7 +25,9 @@ const ModernPlayerCard = ({ matchData }) => {
     minutesPlayed,
     description,
     rating,
-    playerImage
+    playerImage,
+    aiAnalysis,
+    hasAIAnalysis
   } = matchData;
 
   useEffect(() => {
@@ -208,11 +210,28 @@ const ModernPlayerCard = ({ matchData }) => {
           </div>
         </div>
 
+        {/* Insights da IA */}
+        {hasAIAnalysis && aiAnalysis && aiAnalysis.length > 0 && (
+          <div className="ai-insights-section">
+            <div className="insights-header">
+              <span className="ai-icon">🤖</span>
+              <span className="insights-title">Análise IA</span>
+            </div>
+            <div className="insights-list">
+              {aiAnalysis.slice(0, 2).map((insight, index) => (
+                <div key={index} className="insight-item">
+                  {insight}
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* Footer com branding */}
         <div className="card-footer">
           <div className="brand-logo">
             <span className="brand-icon">📊</span>
-            <span className="brand-name">Sofascore</span>
+            <span className="brand-name">{hasAIAnalysis ? 'FutScore AI' : 'FutScore'}</span>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import ImageUpload from './ImageUpload';
+import AIMatchAnalyzer from './AIMatchAnalyzer';
 import './MatchForm.css';
 
 const MatchForm = ({ onSubmit }) => {
@@ -23,6 +24,8 @@ const MatchForm = ({ onSubmit }) => {
   });
 
   const [playerImage, setPlayerImage] = useState(null);
+  const [useAI, setUseAI] = useState(true);
+  const [aiAnalysisCompleted, setAiAnalysisCompleted] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type } = e.target;
@@ -45,9 +48,77 @@ const MatchForm = ({ onSubmit }) => {
     setPlayerImage(imageData);
   };
 
+  const handleAIAnalysisComplete = (analysisResults) => {
+    // Atualiza os dados do formulário com os resultados da IA
+    setFormData(prev => ({
+      ...prev,
+      goals: analysisResults.goals,
+      assists: analysisResults.assists,
+      successfulPasses: analysisResults.successfulPasses,
+      totalPasses: analysisResults.totalPasses,
+      duelsWon: analysisResults.duelsWon,
+      totalDuels: analysisResults.totalDuels,
+      yellowCards: analysisResults.yellowCards,
+      redCards: analysisResults.redCards,
+      minutesPlayed: analysisResults.minutesPlayed,
+      matchRating: analysisResults.aiRating,
+      description: analysisResults.originalDescription,
+      aiAnalysis: analysisResults.aiAnalysis,
+      aiRating: analysisResults.aiRating
+    }));
+    setAiAnalysisCompleted(true);
+  };
+
+  const toggleInputMethod = () => {
+    setUseAI(!useAI);
+    setAiAnalysisCompleted(false);
+  };
+
   return (
-    <form className="match-form" onSubmit={handleSubmit}>
-      <h2 className="form-title">📊 Dados da Partida</h2>
+    <div className="match-form-container">
+      <div className="input-method-selector">
+        <h2 className="form-title">📊 Dados da Partida</h2>
+        <div className="method-toggle">
+          <button
+            type="button"
+            className={`method-btn ${useAI ? 'active' : ''}`}
+            onClick={() => setUseAI(true)}
+          >
+            🤖 Análise com IA
+          </button>
+          <button
+            type="button"
+            className={`method-btn ${!useAI ? 'active' : ''}`}
+            onClick={() => setUseAI(false)}
+          >
+            ✏️ Preenchimento Manual
+          </button>
+        </div>
+      </div>
+
+      {useAI && !aiAnalysisCompleted && (
+        <AIMatchAnalyzer 
+          onAnalysisComplete={handleAIAnalysisComplete}
+          playerImage={playerImage}
+        />
+      )}
+
+      <form className="match-form" onSubmit={handleSubmit}>
+        {useAI && aiAnalysisCompleted && (
+          <div className="ai-success-banner">
+            <div className="success-content">
+              <span className="success-icon">✅</span>
+              <span className="success-text">Dados extraídos pela IA! Você pode ajustar se necessário.</span>
+              <button 
+                type="button" 
+                className="btn-reset-ai"
+                onClick={() => setAiAnalysisCompleted(false)}
+              >
+                🔄 Nova Análise
+              </button>
+            </div>
+          </div>
+        )}
       
       <ImageUpload 
         onImageUpload={handleImageUpload}
@@ -265,10 +336,15 @@ const MatchForm = ({ onSubmit }) => {
         />
       </div>
 
-      <button type="submit" className="btn btn-primary submit-btn">
+      <button 
+        type="submit" 
+        className="btn btn-primary submit-btn"
+        style={{ display: (!useAI || aiAnalysisCompleted) ? 'block' : 'none' }}
+      >
         🎯 Gerar Card de Performance
       </button>
     </form>
+    </div>
   );
 };
 

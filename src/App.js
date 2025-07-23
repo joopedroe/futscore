@@ -9,9 +9,15 @@ function App() {
   const [showCard, setShowCard] = useState(false);
 
   const handleMatchSubmit = (data) => {
-    // Calcular nota baseada na performance
-    const rating = calculateRating(data);
-    const matchWithRating = { ...data, rating };
+    // Se há análise de IA, usa a nota da IA, senão calcula manualmente
+    const rating = data.aiRating || calculateRating(data);
+    const matchWithRating = { 
+      ...data, 
+      rating,
+      // Preserva insights da IA se existirem
+      finalRating: data.aiRating ? data.aiRating : rating,
+      hasAIAnalysis: !!data.aiRating
+    };
     
     setMatchData(matchWithRating);
     setShowCard(true);

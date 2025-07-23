@@ -168,4 +168,112 @@ select.form-input option {
   .match-form {
     padding: 20px;
   }
+}
+
+/* Estilos para o novo sistema de IA */
+.match-form-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.input-method-selector {
+  background: var(--card-bg);
+  border-radius: var(--border-radius);
+  padding: 30px;
+  margin-bottom: 20px;
+  box-shadow: var(--shadow);
+  text-align: center;
+}
+
+.method-toggle {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.method-btn {
+  background: linear-gradient(135deg, #e0e0e0, #f5f5f5);
+  color: #666;
+  border: none;
+  padding: 15px 30px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 25px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.method-btn.active {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.method-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.ai-success-banner {
+  background: linear-gradient(135deg, #56ab2f, #a8e6cf);
+  color: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin-bottom: 25px;
+  box-shadow: 0 5px 15px rgba(86, 171, 47, 0.3);
+}
+
+.success-content {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.success-icon {
+  font-size: 24px;
+}
+
+.success-text {
+  flex: 1;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.btn-reset-ai {
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-reset-ai:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: translateY(-1px);
+}
+
+@media (max-width: 768px) {
+  .method-toggle {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .method-btn {
+    width: 100%;
+    max-width: 250px;
+  }
+  
+  .success-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 10px;
+  }
 } 
