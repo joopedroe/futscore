@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import './App.css';
 import MatchForm from './components/MatchForm';
-import PlayerCard from './components/PlayerCard';
+import ModernPlayerCard from './components/ModernPlayerCard';
 import Header from './components/Header';
 
 function App() {
@@ -62,7 +62,7 @@ function App() {
           <MatchForm onSubmit={handleMatchSubmit} />
         ) : (
           <div className="card-section">
-            <PlayerCard matchData={matchData} />
+            <ModernPlayerCard matchData={matchData} />
             <button 
               className="btn btn-primary new-match-btn" 
               onClick={handleNewMatch}
