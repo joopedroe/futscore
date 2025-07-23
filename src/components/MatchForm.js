@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import ImageUpload from './ImageUpload';
 import './MatchForm.css';
 
 const MatchForm = ({ onSubmit }) => {
@@ -21,6 +22,8 @@ const MatchForm = ({ onSubmit }) => {
     description: ''
   });
 
+  const [playerImage, setPlayerImage] = useState(null);
+
   const handleChange = (e) => {
     const { name, value, type } = e.target;
     setFormData(prev => ({
@@ -35,12 +38,21 @@ const MatchForm = ({ onSubmit }) => {
       alert('Por favor, preencha pelo menos o nome do jogador e o adversário.');
       return;
     }
-    onSubmit(formData);
+    onSubmit({ ...formData, playerImage });
+  };
+
+  const handleImageUpload = (imageData) => {
+    setPlayerImage(imageData);
   };
 
   return (
     <form className="match-form" onSubmit={handleSubmit}>
       <h2 className="form-title">📊 Dados da Partida</h2>
+      
+      <ImageUpload 
+        onImageUpload={handleImageUpload}
+        currentImage={playerImage}
+      />
       
       <div className="form-grid">
         <div className="form-group">
