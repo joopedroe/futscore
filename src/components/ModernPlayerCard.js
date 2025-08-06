@@ -7,6 +7,32 @@ function ModernPlayerCard({ matchData }) {
   const [isDownloading, setIsDownloading] = useState(false);
   const cardRef = useRef(null);
 
+  // Apply dynamic colors from uploaded image
+  useEffect(() => {
+    if (matchData.imageData?.colors && cardRef.current) {
+      const { palette, dominantRgb } = matchData.imageData.colors;
+      const cardElement = cardRef.current;
+      
+      // Set CSS custom properties for dynamic colors
+      cardElement.style.setProperty('--primary-color', palette[0]);
+      cardElement.style.setProperty('--secondary-color', palette[1]);
+      cardElement.style.setProperty('--accent-color', palette[2]);
+      cardElement.style.setProperty('--gradient-start', palette[0]);
+      cardElement.style.setProperty('--gradient-middle', palette[1]);
+      cardElement.style.setProperty('--gradient-end', palette[2]);
+      
+      // Create dynamic gradient
+      const gradient = `linear-gradient(135deg, ${palette[0]} 0%, ${palette[1]} 50%, ${palette[2]} 100%)`;
+      cardElement.style.setProperty('--card-gradient', gradient);
+      
+      // Set lighter variants for subtle effects
+      const lightVariant1 = palette[0].replace('rgb(', 'rgba(').replace(')', ', 0.3)');
+      const lightVariant2 = palette[1].replace('rgb(', 'rgba(').replace(')', ', 0.2)');
+      cardElement.style.setProperty('--primary-light', lightVariant1);
+      cardElement.style.setProperty('--secondary-light', lightVariant2);
+    }
+  }, [matchData.imageData]);
+
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -105,17 +131,31 @@ function ModernPlayerCard({ matchData }) {
               <span className="match-date">{formatDate(matchData.matchDate)}</span>
             </div>
             <div className="teams-score">
-              <span>{matchData.homeTeam}</span>
+              <span className="team-name">{matchData.homeTeam}</span>
               <span className="score-divider">{matchData.homeScore} - {matchData.awayScore}</span>
-              <span>{matchData.awayTeam}</span>
+              <span className="team-name">{matchData.awayTeam}</span>
             </div>
           </div>
+
+          {/* SofaScore-style branding */}
+          <div className="card-branding">
+            <div className="brand-logo">⚽</div>
+            <span className="brand-text">FutScore</span>
+          </div>
+
+          {/* Performance indicator */}
+          <div className="performance-indicator" style={{ 
+            height: `${Math.min(matchData.rating * 8, 60)}px`,
+            background: getRatingColor(matchData.rating)
+          }}></div>
 
           {/* Seção do jogador */}
           <div className="player-section">
             <div className="player-image-container">
               <div className="player-image-wrapper">
-                {matchData.profileImage ? (
+                {matchData.imageData?.url ? (
+                  <img src={matchData.imageData.url} alt={matchData.playerName} className="player-image" />
+                ) : matchData.profileImage ? (
                   <img src={matchData.profileImage} alt={matchData.playerName} className="player-image" />
                 ) : (
                   <div className="player-image-placeholder">👤</div>
