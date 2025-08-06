@@ -1,25 +1,161 @@
+/* Layout principal do App */
 .App {
   min-height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+  overflow: hidden;
 }
 
+/* Padrão de fundo animado */
+.App::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+  background-size: 50px 50px;
+  animation: backgroundMove 20s linear infinite;
+  z-index: 0;
+}
+
+@keyframes backgroundMove {
+  0% {
+    transform: translate(0, 0);
+  }
+  100% {
+    transform: translate(50px, 50px);
+  }
+}
+
+/* Container principal */
+.container {
+  position: relative;
+  z-index: 1;
+  padding: 2rem 1rem;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Seção do card */
 .card-section {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px;
-  animation: slideIn 0.5s ease-out;
+  gap: 2rem;
+  margin-top: 2rem;
+  animation: fadeIn 0.5s ease-out;
 }
 
+/* Botão de nova partida */
 .new-match-btn {
-  margin-top: 20px;
-  padding: 15px 30px;
-  font-size: 16px;
+  background: white;
+  color: var(--primary);
+  padding: 1rem 2.5rem;
+  border-radius: var(--radius-full);
+  font-size: 1.1rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-lg);
+  transition: all var(--transition);
+  position: relative;
+  overflow: hidden;
 }
 
-@keyframes slideIn {
+.new-match-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  background: var(--gradient-primary);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+.new-match-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-xl);
+  color: white;
+}
+
+.new-match-btn:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+.new-match-btn span {
+  position: relative;
+  z-index: 1;
+}
+
+/* Botões gerais */
+.btn {
+  border: none;
+  border-radius: var(--radius-md);
+  padding: 0.75rem 1.5rem;
+  font-family: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 1rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary {
+  background: var(--gradient-primary);
+  color: white;
+  box-shadow: var(--shadow-md);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-lg);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--shadow);
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+  
+  .card-section {
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  
+  .new-match-btn {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* Animações de entrada */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
   from {
     opacity: 0;
     transform: translateY(30px);
@@ -30,16 +166,11 @@
   }
 }
 
-@media (max-width: 768px) {
-  .container {
-    padding: 15px;
-  }
-  
-  .card-section {
-    gap: 20px;
-  }
-  
-  .new-match-btn {
-    width: 100%;
-  }
+/* Classes de animação */
+.fade-in {
+  animation: fadeIn 0.5s ease-out;
+}
+
+.slide-up {
+  animation: slideUp 0.6s ease-out;
 } 

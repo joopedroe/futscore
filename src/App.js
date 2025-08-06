@@ -67,7 +67,7 @@ function App() {
               className="btn btn-primary new-match-btn" 
               onClick={handleNewMatch}
             >
-              Nova Partida
+              <span>Nova Partida</span>
             </button>
           </div>
         )}

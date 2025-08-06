@@ -1,107 +1,56 @@
-import React, { useRef, useState, useEffect } from 'react';
-import html2canvas from 'html2canvas';
+import React, { useState, useRef, useEffect } from 'react';
 import './ModernPlayerCard.css';
+import html2canvas from 'html2canvas';
 
-const ModernPlayerCard = ({ matchData }) => {
+function ModernPlayerCard({ matchData }) {
+  const [isFlipped, setIsFlipped] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const cardRef = useRef(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  
-  const {
-    playerName,
-    position,
-    matchDate,
-    opponent,
-    result,
-    goals,
-    assists,
-    successfulPasses,
-    totalPasses,
-    duelsWon,
-    totalDuels,
-    yellowCards,
-    redCards,
-    matchRating,
-    minutesPlayed,
-    description,
-    rating,
-    playerImage
-  } = matchData;
-
-  useEffect(() => {
-    setIsVisible(true);
-  }, []);
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
-    return new Date(dateString).toLocaleDateString('pt-BR');
+    const date = new Date(dateString);
+    return date.toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
   };
 
-  const getPassAccuracy = () => {
-    if (totalPasses === 0) return 0;
-    return Math.round((successfulPasses / totalPasses) * 100);
-  };
-
-  const getDuelWinRate = () => {
-    if (totalDuels === 0) return 0;
-    return Math.round((duelsWon / totalDuels) * 100);
+  const getPositionLabel = (position) => {
+    const positions = {
+      'GK': 'GOL',
+      'DC': 'ZAG',
+      'LB': 'LE',
+      'RB': 'LD',
+      'DMC': 'VOL',
+      'MC': 'MC',
+      'AMC': 'MEI',
+      'LW': 'PE',
+      'RW': 'PD',
+      'ST': 'ATA'
+    };
+    return positions[position] || position;
   };
 
   const getRatingColor = (rating) => {
-    if (rating >= 9) return '#43e97b';
-    if (rating >= 8) return '#4caf50';
-    if (rating >= 7) return '#00f2fe';
-    if (rating >= 6.5) return '#667eea';
-    if (rating >= 5) return '#ffc107';
-    return '#f44336';
+    if (rating >= 8) return '#10b981';
+    if (rating >= 6) return '#f59e0b';
+    return '#ef4444';
   };
 
-  const getCardColors = () => {
-    if (playerImage?.colors) {
-      const { palette, dominantRgb } = playerImage.colors;
-      return {
-        primary: palette[0] || 'rgb(102, 126, 234)',
-        secondary: palette[1] || 'rgb(118, 75, 162)',
-        accent: palette[2] || 'rgb(240, 147, 251)',
-        dominant: `rgb(${dominantRgb?.join(',')})` || 'rgb(102, 126, 234)',
-        gradient: `linear-gradient(135deg, ${palette[0] || 'rgb(102, 126, 234)'} 0%, ${palette[1] || 'rgb(118, 75, 162)'} 50%, ${palette[2] || 'rgb(240, 147, 251)'} 100%)`
-      };
-    }
-    
-    // Cores padrão caso não haja imagem
-    return {
-      primary: 'rgb(102, 126, 234)',
-      secondary: 'rgb(118, 75, 162)',
-      accent: 'rgb(240, 147, 251)',
-      dominant: 'rgb(102, 126, 234)',
-      gradient: 'linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 50%, rgb(240, 147, 251) 100%)'
-    };
-  };
+  const passAccuracy = matchData.totalPasses > 0 
+    ? Math.round((matchData.successfulPasses / matchData.totalPasses) * 100)
+    : 0;
 
-  const colors = getCardColors();
+  const duelSuccessRate = matchData.totalDuels > 0
+    ? Math.round((matchData.duelsWon / matchData.totalDuels) * 100)
+    : 0;
 
-  const getMainStats = () => {
-    const stats = [];
+  const handleDownload = async () => {
+    if (!cardRef.current) return;
     
-    // Sempre mostra essas estatísticas principais
-    stats.push(
-      { label: 'GRANDES CHANCES CRIADAS', value: Math.max(1, Math.floor(assists * 2 + goals)), ranking: '1°' },
-      { label: 'PASSES DECISIVOS', value: Math.max(1, successfulPasses || 49), ranking: '1°' },
-      { label: 'FINALIZAÇÕES NO GOL', value: Math.max(1, goals * 3 + Math.floor(Math.random() * 20) + 7), ranking: '1°' },
-      { label: 'DRIBLES CERTOS', value: Math.max(1, Math.floor(getDuelWinRate() / 2) + Math.floor(Math.random() * 30) + 19), ranking: '1°' },
-      { label: 'GOLS', value: goals, ranking: goals > 0 ? '2°' : '10°' },
-      { label: 'ASSISTÊNCIAS', value: assists, ranking: assists > 0 ? '2°' : '8°' },
-      { label: 'MINUTOS EM CAMPO', value: minutesPlayed.toLocaleString(), ranking: '10°' }
-    );
-    
-    return stats;
-  };
-
-  const downloadCard = async () => {
-    if (isGenerating) return;
-    
-    setIsGenerating(true);
-    
+    setIsDownloading(true);
     try {
       const canvas = await html2canvas(cardRef.current, {
         backgroundColor: null,
@@ -112,136 +61,169 @@ const ModernPlayerCard = ({ matchData }) => {
       });
       
       const link = document.createElement('a');
-      link.download = `futscore-${playerName.replace(/\s+/g, '_')}-${formatDate(matchDate).replace(/\//g, '_')}.png`;
+      link.download = `futscore-${matchData.playerName}-${Date.now()}.png`;
       link.href = canvas.toDataURL();
       link.click();
     } catch (error) {
-      console.error('Erro ao gerar imagem:', error);
-      alert('Erro ao gerar imagem. Tente novamente.');
+      console.error('Erro ao baixar o card:', error);
     } finally {
-      setIsGenerating(false);
+      setIsDownloading(false);
     }
   };
 
-  const mainStats = getMainStats();
+  const handleShare = () => {
+    if (navigator.share) {
+      navigator.share({
+        title: `Performance de ${matchData.playerName}`,
+        text: `Confira minha performance na partida! ⚽ Nota: ${matchData.rating}/10`,
+        url: window.location.href
+      }).catch(console.error);
+    }
+  };
 
   return (
-    <div className="modern-card-container">
-      <div 
-        ref={cardRef}
-        className={`modern-player-card ${isVisible ? 'visible' : ''}`}
-        style={{
-          '--primary-color': colors.primary,
-          '--secondary-color': colors.secondary,
-          '--accent-color': colors.accent,
-          '--dominant-color': colors.dominant,
-          '--card-gradient': colors.gradient
-        }}
-      >
-        {/* Header com logo e nome */}
-        <div className="card-header">
-          <div className="team-logo">
-            <div className="logo-icon">⚽</div>
+    <div className="modern-player-card">
+      <div className={`card-wrapper ${isFlipped ? 'flipped' : ''}`} ref={cardRef}>
+        {/* Frente do card */}
+        <div className="card-face card-front">
+          <div className="card-pattern"></div>
+          
+          {/* Botões de ação */}
+          <div className="card-actions">
+            <button className="action-button" onClick={handleDownload} disabled={isDownloading}>
+              {isDownloading ? '⏳' : '📥'}
+            </button>
+            <button className="action-button" onClick={handleShare}>
+              📤
+            </button>
           </div>
-          <div className="player-info">
-            <h1 className="player-name">{playerName}</h1>
-            <p className="match-subtitle">ENTRE TODOS DO {opponent?.toUpperCase()} EM {new Date().getFullYear()}</p>
-          </div>
-          <div className="rating-badge">
-            <span className="rating-value" style={{ color: getRatingColor(rating) }}>
-              {rating.toFixed(2)}
-            </span>
-          </div>
-        </div>
 
-        {/* Conteúdo principal */}
-        <div className="card-content">
-          {/* Stats principais */}
-          <div className="main-stats">
-            {mainStats.map((stat, index) => (
-              <div 
-                key={index} 
-                className="stat-row"
-                style={{ '--index': index }}
-              >
-                <div className="stat-info">
-                  <span className="stat-label">{stat.label}</span>
-                  <span className="stat-ranking">{stat.ranking}</span>
-                </div>
-                <span className="stat-value">{stat.value}</span>
+          {/* Header */}
+          <div className="card-header">
+            <div className="match-info">
+              <span className="competition-badge">{matchData.competition || 'Partida'}</span>
+              <span className="match-date">{formatDate(matchData.matchDate)}</span>
+            </div>
+            <div className="teams-score">
+              <span>{matchData.homeTeam}</span>
+              <span className="score-divider">{matchData.homeScore} - {matchData.awayScore}</span>
+              <span>{matchData.awayTeam}</span>
+            </div>
+          </div>
+
+          {/* Seção do jogador */}
+          <div className="player-section">
+            <div className="player-image-container">
+              <div className="player-image-wrapper">
+                {matchData.profileImage ? (
+                  <img src={matchData.profileImage} alt={matchData.playerName} className="player-image" />
+                ) : (
+                  <div className="player-image-placeholder">👤</div>
+                )}
               </div>
-            ))}
-          </div>
+              <span className="position-badge">{getPositionLabel(matchData.position)}</span>
+            </div>
 
-          {/* Imagem do jogador */}
-          <div className="player-image-section">
-            {playerImage ? (
-              <img 
-                src={playerImage.url} 
-                alt={playerName}
-                className="player-photo"
-              />
-            ) : (
-              <div className="player-placeholder">
-                <span>👤</span>
+            <h2 className="player-name">{matchData.playerName}</h2>
+            
+            <div className="rating-display" style={{ borderColor: getRatingColor(matchData.rating) }}>
+              <span className="rating-star">⭐</span>
+              <span style={{ color: getRatingColor(matchData.rating) }}>{matchData.rating}</span>
+            </div>
+
+            {/* Grid de estatísticas principais */}
+            <div className="stats-grid">
+              <div className="stat-item">
+                <span className="stat-value">{matchData.goals}</span>
+                <span className="stat-label">Gols</span>
               </div>
-            )}
+              <div className="stat-item">
+                <span className="stat-value">{matchData.assists}</span>
+                <span className="stat-label">Assists</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">{passAccuracy}%</span>
+                <span className="stat-label">Passes</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">{duelSuccessRate}%</span>
+                <span className="stat-label">Duelos</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">{matchData.yellowCards}</span>
+                <span className="stat-label">Amarelos</span>
+              </div>
+              <div className="stat-item">
+                <span className="stat-value">{matchData.redCards}</span>
+                <span className="stat-label">Vermelhos</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Estatísticas detalhadas */}
+          <div className="detailed-stats">
+            <div className="stat-row">
+              <span className="stat-name">
+                <span className="stat-icon">⚡</span>
+                Faltas Cometidas
+              </span>
+              <span className="stat-number">{matchData.foulsCommitted}</span>
+            </div>
+            <div className="stat-row">
+              <span className="stat-name">
+                <span className="stat-icon">🛡️</span>
+                Faltas Sofridas
+              </span>
+              <span className="stat-number">{matchData.foulsSuffered}</span>
+            </div>
+          </div>
+
+          <div className="flip-hint" onClick={() => setIsFlipped(!isFlipped)}>
+            <span>↻</span>
+            <span>Virar card</span>
           </div>
         </div>
 
-        {/* Heatmap visual */}
-        <div className="heatmap-section">
-          <div className="field-heatmap">
-            <div className="field-overlay"></div>
-            {/* Pontos de calor baseados na performance */}
-            {Array.from({ length: Math.min(50, (goals * 10) + (assists * 8) + 20) }).map((_, i) => (
-              <div 
-                key={i}
-                className="heat-point"
-                style={{
-                  left: `${Math.random() * 100}%`,
-                  top: `${Math.random() * 100}%`,
-                  animationDelay: `${Math.random() * 2}s`
-                }}
-              />
-            ))}
+        {/* Verso do card */}
+        <div className="card-face card-back">
+          <div className="card-back-header">
+            <h3 className="card-back-title">Análise Detalhada</h3>
+            <p>{matchData.playerName} • {formatDate(matchData.matchDate)}</p>
           </div>
-        </div>
 
-        {/* Footer com branding */}
-        <div className="card-footer">
-          <div className="brand-logo">
-            <span className="brand-icon">📊</span>
-            <span className="brand-name">Sofascore</span>
-          </div>
-        </div>
-
-        {/* Efeitos visuais */}
-        <div className="card-glow"></div>
-        <div className="card-shine"></div>
-      </div>
-
-      {/* Botão de download */}
-      <div className="card-actions">
-        <button 
-          className="download-btn"
-          onClick={downloadCard}
-          disabled={isGenerating}
-        >
-          {isGenerating ? (
-            <>
-              <div className="btn-spinner"></div>
-              Gerando...
-            </>
-          ) : (
-            <>
-              📥 Baixar Card
-            </>
+          {matchData.highlights && (
+            <div className="highlights-section">
+              <h4 className="highlights-title">
+                <span>✨</span>
+                Destaques da Partida
+              </h4>
+              <p className="highlights-text">{matchData.highlights}</p>
+            </div>
           )}
-        </button>
+
+          <div className="performance-chart">
+            <h4 className="highlights-title">
+              <span>📊</span>
+              Resumo de Performance
+            </h4>
+            <div className="chart-placeholder">
+              <div style={{ textAlign: 'left' }}>
+                <p>• Total de Passes: {matchData.successfulPasses}/{matchData.totalPasses}</p>
+                <p>• Duelos Ganhos: {matchData.duelsWon}/{matchData.totalDuels}</p>
+                <p>• Participação em Gols: {matchData.goals + matchData.assists}</p>
+                <p>• Nota Final: {matchData.rating}/10</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flip-hint" onClick={() => setIsFlipped(!isFlipped)}>
+            <span>↻</span>
+            <span>Voltar</span>
+          </div>
+        </div>
       </div>
     </div>
   );
-};
+}
 
 export default ModernPlayerCard;

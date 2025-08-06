@@ -1,415 +1,438 @@
-/* Container principal */
-.modern-card-container {
+/* Container principal do card */
+.modern-player-card {
+  width: 100%;
+  max-width: 450px;
+  margin: 0 auto;
+  perspective: 1000px;
+}
+
+.card-wrapper {
+  position: relative;
+  width: 100%;
+  height: 600px;
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+  cursor: pointer;
+}
+
+.card-wrapper.flipped {
+  transform: rotateY(180deg);
+}
+
+/* Face frontal e traseira do card */
+.card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  box-shadow: var(--shadow-2xl);
+}
+
+.card-front {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  position: relative;
+}
+
+.card-back {
+  background: linear-gradient(135deg, #1a1c20 0%, #2d3436 100%);
+  transform: rotateY(180deg);
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 20px;
-  padding: 20px;
+  padding: 2rem;
+  color: white;
 }
 
-/* Card principal */
-.modern-player-card {
-  width: 600px;
-  height: 800px;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #2a2a2a 100%);
-  border-radius: 20px;
-  position: relative;
-  overflow: hidden;
-  transform: translateY(30px);
-  opacity: 0;
-  transition: all 1s cubic-bezier(0.34, 1.56, 0.64, 1);
-  box-shadow: 
-    0 30px 60px rgba(0, 0, 0, 0.5),
-    0 0 100px rgba(102, 126, 234, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-.modern-player-card.visible {
-  transform: translateY(0);
-  opacity: 1;
+/* Padrão de fundo */
+.card-pattern {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255,255,255,0.05) 0%, transparent 50%);
+  z-index: 1;
 }
 
 /* Header do card */
 .card-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  padding: 30px 30px 20px;
   position: relative;
-  z-index: 10;
+  z-index: 2;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 }
 
-.team-logo {
+.match-info {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 8px;
+  margin-bottom: 0.5rem;
 }
 
-.logo-icon {
-  width: 40px;
-  height: 40px;
-  background: var(--primary-color, rgb(102, 126, 234));
-  border-radius: 8px;
+.competition-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: white;
+}
+
+.match-date {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.teams-score {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  gap: 1rem;
+  color: white;
+  font-weight: 600;
+  font-size: 1.25rem;
 }
 
-.player-info {
-  flex: 1;
-  margin-left: 20px;
-}
-
-.player-name {
-  font-size: 36px;
-  font-weight: 800;
-  margin: 0;
-  background: var(--card-gradient, linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 50%, rgb(240, 147, 251) 100%));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  text-shadow: none;
-  /* Fallback para navegadores que não suportam background-clip */
-  color: #ffffff;
-}
-
-/* Suporte para navegadores sem background-clip */
-@supports not (-webkit-background-clip: text) {
-  .player-name {
-    color: #ffffff;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-  }
-}
-
-.match-subtitle {
-  font-size: 12px;
-  font-weight: 700;
+.score-divider {
+  font-size: 1.5rem;
   color: rgba(255, 255, 255, 0.6);
-  margin: 8px 0 0 0;
-  text-transform: uppercase;
-  letter-spacing: 1px;
 }
 
-.rating-badge {
-  background: rgba(0, 0, 0, 0.5);
-  border: 2px solid var(--primary-color, rgb(102, 126, 234));
-  border-radius: 12px;
-  padding: 12px 16px;
+/* Seção do jogador */
+.player-section {
+  position: relative;
+  z-index: 2;
+  padding: 2rem;
+  text-align: center;
+  color: white;
+}
+
+.player-image-container {
+  width: 150px;
+  height: 150px;
+  margin: 0 auto 1rem;
+  position: relative;
+}
+
+.player-image-wrapper {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
 }
 
-.rating-value {
-  font-size: 24px;
-  font-weight: 900;
-  text-shadow: 0 0 20px currentColor;
+.player-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* Conteúdo principal */
-.card-content {
-  display: flex;
-  padding: 0 30px;
-  gap: 30px;
-  position: relative;
-  z-index: 5;
-}
-
-/* Stats principais */
-.main-stats {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-}
-
-.stat-row {
+.player-image-placeholder {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  position: relative;
+  justify-content: center;
+  font-size: 4rem;
+  background: rgba(255, 255, 255, 0.2);
 }
 
-.stat-row::before {
-  content: '';
+.position-badge {
   position: absolute;
-  left: 0;
   bottom: 0;
-  height: 1px;
-  width: 0;
-  background: var(--primary-color, rgb(102, 126, 234));
-  transition: width 0.5s ease;
-  animation: statLineGrow 2s ease-out forwards;
-  animation-delay: calc(var(--index, 0) * 0.2s);
+  right: 10px;
+  background: var(--gradient-accent);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: var(--radius-full);
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: var(--shadow-md);
 }
 
-@keyframes statLineGrow {
-  to { width: 100%; }
+.player-name {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
-.stat-info {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
+.rating-display {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 0.5rem 1.5rem;
+  border-radius: var(--radius-full);
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+}
+
+.rating-star {
+  color: #fbbf24;
+  font-size: 1.5rem;
+}
+
+/* Grid de estatísticas */
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  padding: 0 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-item {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-md);
+  padding: 1rem;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: all var(--transition);
+}
+
+.stat-item:hover {
+  transform: translateY(-2px);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: var(--shadow-lg);
+}
+
+.stat-value {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: white;
+  display: block;
+  margin-bottom: 0.25rem;
 }
 
 .stat-label {
-  font-size: 12px;
-  font-weight: 600;
+  font-size: 0.75rem;
   color: rgba(255, 255, 255, 0.8);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-.stat-ranking {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--primary-color, rgb(102, 126, 234));
-  text-transform: uppercase;
-}
-
-.stat-value {
-  font-size: 28px;
-  font-weight: 900;
-  color: #ffffff;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Seção da imagem do jogador */
-.player-image-section {
-  width: 200px;
-  height: 300px;
-  position: relative;
-  border-radius: 16px;
-  overflow: hidden;
-  background: var(--card-gradient, linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 50%, rgb(240, 147, 251) 100%));
-  box-shadow: 
-    0 20px 40px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
-}
-
-.player-photo {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 0.5s ease;
-}
-
-.player-image-section:hover .player-photo {
-  transform: scale(1.05);
-}
-
-.player-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 80px;
-  color: rgba(255, 255, 255, 0.3);
+/* Estatísticas detalhadas */
+.detailed-stats {
   background: rgba(255, 255, 255, 0.05);
-}
-
-/* Heatmap */
-.heatmap-section {
-  position: absolute;
-  bottom: 80px;
-  left: 30px;
-  right: 30px;
-  height: 120px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: rgba(0, 0, 0, 0.3);
   backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin: 0 1.5rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.field-heatmap {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  background: 
-    linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.1) 50%, transparent 100%),
-    linear-gradient(0deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.field-overlay {
-  position: absolute;
-  inset: 0;
-  background: 
-    radial-gradient(circle at 25% 50%, rgba(var(--primary-color-rgb, 102, 126, 234), 0.2) 0%, transparent 50%),
-    radial-gradient(circle at 75% 30%, rgba(var(--secondary-color-rgb, 118, 75, 162), 0.15) 0%, transparent 50%);
+.stat-row:last-child {
+  border-bottom: none;
 }
 
-.heat-point {
-  position: absolute;
-  width: 4px;
-  height: 4px;
-  background: var(--primary-color, rgb(102, 126, 234));
-  border-radius: 50%;
-  opacity: 0;
-  animation: heatPulse 2s infinite;
-  box-shadow: 0 0 10px currentColor;
-}
-
-@keyframes heatPulse {
-  0%, 100% { opacity: 0; transform: scale(0.5); }
-  50% { opacity: 1; transform: scale(1.5); }
-}
-
-/* Footer */
-.card-footer {
-  position: absolute;
-  bottom: 20px;
-  right: 30px;
-  z-index: 10;
-}
-
-.brand-logo {
+.stat-name {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
   display: flex;
   align-items: center;
-  gap: 8px;
-  color: rgba(255, 255, 255, 0.6);
-  font-size: 14px;
-  font-weight: 700;
+  gap: 0.5rem;
 }
 
-.brand-icon {
-  font-size: 18px;
+.stat-icon {
+  font-size: 1rem;
 }
 
-/* Efeitos visuais */
-.card-glow {
-  position: absolute;
-  inset: -2px;
-  background: var(--card-gradient, linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 50%, rgb(240, 147, 251) 100%));
-  border-radius: 22px;
-  opacity: 0.3;
-  filter: blur(20px);
-  z-index: -1;
-  animation: glowPulse 3s ease-in-out infinite;
-}
-
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.3; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.02); }
-}
-
-.card-shine {
-  position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent 30%, rgba(255, 255, 255, 0.1) 50%, transparent 70%);
-  transform: rotate(45deg);
-  animation: shine 4s ease-in-out infinite;
-  pointer-events: none;
-}
-
-@keyframes shine {
-  0% { transform: rotate(45deg) translateX(-100%); }
-  100% { transform: rotate(45deg) translateX(100%); }
-}
-
-/* Ações do card */
-.card-actions {
-  display: flex;
-  gap: 16px;
-}
-
-.download-btn {
-  background: var(--card-gradient, linear-gradient(135deg, rgb(102, 126, 234) 0%, rgb(118, 75, 162) 50%, rgb(240, 147, 251) 100%));
-  border: none;
+.stat-number {
+  font-weight: 600;
   color: white;
-  padding: 16px 32px;
-  border-radius: 12px;
-  font-size: 16px;
+}
+
+/* Verso do card */
+.card-back-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.card-back-title {
+  font-size: 1.75rem;
   font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  margin-bottom: 0.5rem;
+}
+
+.highlights-section {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.highlights-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
-  gap: 8px;
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-  position: relative;
-  overflow: hidden;
+  gap: 0.5rem;
 }
 
-.download-btn::before {
-  content: '';
+.highlights-text {
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.performance-chart {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.chart-placeholder {
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.875rem;
+}
+
+/* Botão de virar card */
+.flip-hint {
   position: absolute;
-  inset: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%, rgba(255, 255, 255, 0.1) 100%);
-  opacity: 0;
-  transition: opacity 0.3s ease;
+  bottom: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-full);
+  font-size: 0.75rem;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  z-index: 3;
+  animation: pulse 2s ease-in-out infinite;
 }
 
-.download-btn:hover::before {
-  opacity: 1;
+/* Botões de ação */
+.card-actions {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  gap: 0.5rem;
+  z-index: 3;
 }
 
-.download-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 35px rgba(102, 126, 234, 0.4);
-}
-
-.download-btn:disabled {
-  opacity: 0.7;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.btn-spinner {
-  width: 16px;
-  height: 16px;
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  border-top: 2px solid white;
+.action-button {
+  width: 40px;
+  height: 40px;
   border-radius: 50%;
-  animation: spin 1s linear infinite;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-size: 1.2rem;
 }
 
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+.action-button:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
 }
 
 /* Responsividade */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
   .modern-player-card {
-    width: 350px;
-    height: 500px;
+    max-width: 350px;
   }
   
-  .card-header {
-    padding: 20px 20px 15px;
+  .card-wrapper {
+    height: 550px;
+  }
+  
+  .player-image-container {
+    width: 120px;
+    height: 120px;
   }
   
   .player-name {
-    font-size: 24px;
+    font-size: 1.5rem;
   }
   
-  .card-content {
-    flex-direction: column;
-    padding: 0 20px;
-    gap: 20px;
+  .rating-display {
+    font-size: 1.5rem;
   }
   
-  .player-image-section {
-    width: 100%;
-    height: 150px;
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
   
   .stat-value {
-    font-size: 20px;
+    font-size: 1.5rem;
   }
   
-  .heatmap-section {
-    height: 80px;
-    bottom: 60px;
-    left: 20px;
-    right: 20px;
+  .card-back {
+    padding: 1.5rem;
   }
 }
+
+/* Animações */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-item {
+  animation: slideInUp 0.5s ease-out;
+  animation-fill-mode: both;
+}
+
+.stat-item:nth-child(1) { animation-delay: 0.1s; }
+.stat-item:nth-child(2) { animation-delay: 0.2s; }
+.stat-item:nth-child(3) { animation-delay: 0.3s; }
+.stat-item:nth-child(4) { animation-delay: 0.4s; }
+.stat-item:nth-child(5) { animation-delay: 0.5s; }
+.stat-item:nth-child(6) { animation-delay: 0.6s; }
