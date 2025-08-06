@@ -11,7 +11,11 @@ function App() {
   const handleMatchSubmit = (data) => {
     // Calcular nota baseada na performance
     const rating = calculateRating(data);
-    const matchWithRating = { ...data, rating };
+    const matchWithRating = { 
+      ...data, 
+      rating,
+      imageData: data.profileImage // Pass profileImage as imageData for the card
+    };
     
     setMatchData(matchWithRating);
     setShowCard(true);
