@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import './App.css';
 import MatchForm from './components/MatchForm';
 import ModernPlayerCard from './components/ModernPlayerCard';
+import FutScoreCard from './components/FutScoreCard';
 import Header from './components/Header';
 
 function App() {
   const [matchData, setMatchData] = useState(null);
   const [showCard, setShowCard] = useState(false);
+  const [cardStyle, setCardStyle] = useState('futscore'); // 'modern' ou 'futscore'
 
   const handleMatchSubmit = (data) => {
     // Calcular nota baseada na performance
@@ -59,10 +61,33 @@ function App() {
         <Header />
         
         {!showCard ? (
-          <MatchForm onSubmit={handleMatchSubmit} />
+          <div>
+            <div className="style-selector">
+              <h3>Escolha o estilo do card:</h3>
+              <div className="style-buttons">
+                <button 
+                  className={`style-btn ${cardStyle === 'futscore' ? 'active' : ''}`}
+                  onClick={() => setCardStyle('futscore')}
+                >
+                  FutScore Style
+                </button>
+                <button 
+                  className={`style-btn ${cardStyle === 'modern' ? 'active' : ''}`}
+                  onClick={() => setCardStyle('modern')}
+                >
+                  Modern Style
+                </button>
+              </div>
+            </div>
+            <MatchForm onSubmit={handleMatchSubmit} />
+          </div>
         ) : (
           <div className="card-section">
-            <ModernPlayerCard matchData={matchData} />
+            {cardStyle === 'futscore' ? (
+              <FutScoreCard matchData={matchData} />
+            ) : (
+              <ModernPlayerCard matchData={matchData} />
+            )}
             <button 
               className="btn btn-primary new-match-btn" 
               onClick={handleNewMatch}

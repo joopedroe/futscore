@@ -1,0 +1,483 @@
+/* FutScore Card Container */
+.futscore-card-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.futscore-card-container.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Main Card */
+.futscore-card {
+  width: 400px;
+  height: 600px;
+  background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1e 50%, #16213e 100%);
+  border-radius: 20px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 
+    0 20px 40px rgba(0, 0, 0, 0.5),
+    0 0 80px rgba(0, 255, 136, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+  transition: transform 0.3s ease;
+}
+
+.futscore-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 
+    0 25px 50px rgba(0, 0, 0, 0.6),
+    0 0 100px rgba(0, 255, 136, 0.2),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.15);
+}
+
+/* Gradient Background Effect */
+.card-gradient-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, 
+    var(--rating-color, #00ff88) 0%, 
+    var(--rating-color, #00ff88) 50%, 
+    rgba(255, 255, 255, 0.3) 100%);
+  animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* Card Header */
+.card-header {
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+  margin: 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.match-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.match-date {
+  font-size: 14px;
+  font-weight: bold;
+  color: #ffffff;
+  font-family: 'Arial', sans-serif;
+}
+
+.match-versus {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.vs-text {
+  font-size: 12px;
+  color: #cccccc;
+  font-family: 'Arial', sans-serif;
+}
+
+.opponent-name {
+  font-size: 16px;
+  font-weight: bold;
+  color: #ffffff;
+  font-family: 'Arial', sans-serif;
+}
+
+.match-result {
+  font-size: 20px;
+  font-weight: bold;
+  color: var(--rating-color, #00ff88);
+  font-family: 'Arial', sans-serif;
+  text-shadow: 0 0 10px currentColor;
+}
+
+/* Player Section */
+.player-section {
+  position: relative;
+  padding: 20px;
+  margin: 0 20px;
+  background: linear-gradient(180deg, 
+    rgba(255, 255, 255, 0.05) 0%, 
+    rgba(255, 255, 255, 0.02) 100%);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  min-height: 170px;
+}
+
+.player-image-container {
+  width: 120px;
+  height: 120px;
+  margin: 0 auto 20px;
+  position: relative;
+}
+
+.player-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--rating-color, #00ff88);
+  box-shadow: 0 0 20px rgba(0, 255, 136, 0.5);
+}
+
+.player-silhouette {
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255, 255, 255, 0.2);
+}
+
+.silhouette-svg {
+  width: 80%;
+  height: 80%;
+}
+
+.player-name {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+  text-align: center;
+  margin: 0 0 15px 0;
+  font-family: 'Arial Black', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.position-badge {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 5px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: bold;
+  color: #000000;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.rating-circle {
+  position: absolute;
+  top: 50%;
+  right: 20px;
+  transform: translateY(-50%);
+  width: 70px;
+  height: 70px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 
+    0 0 20px rgba(0, 0, 0, 0.3),
+    0 0 30px var(--rating-color, #00ff88);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: translateY(-50%) scale(1); }
+  50% { transform: translateY(-50%) scale(1.05); }
+}
+
+.rating-number {
+  font-size: 28px;
+  font-weight: bold;
+  color: #000000;
+  font-family: 'Arial Black', sans-serif;
+}
+
+/* Stats Section */
+.stats-section {
+  margin: 20px;
+  padding: 20px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.stat-item:last-child {
+  margin-bottom: 0;
+}
+
+.stat-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateX(5px);
+}
+
+.stat-icon {
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.stat-label {
+  flex: 1;
+  font-size: 12px;
+  color: #cccccc;
+  font-family: 'Arial', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.stat-value {
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'Arial', sans-serif;
+  text-shadow: 0 0 5px currentColor;
+}
+
+/* Card Footer */
+.card-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 50px;
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 30px;
+  border-top: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.futscore-logo {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+  font-family: 'Arial Black', sans-serif;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.minutes-played {
+  font-size: 12px;
+  color: #cccccc;
+  font-family: 'Arial', sans-serif;
+}
+
+.cards-info {
+  display: flex;
+  gap: 10px;
+}
+
+.card-indicator {
+  width: 15px;
+  height: 20px;
+  border-radius: 2px;
+  position: relative;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+.card-indicator.yellow {
+  background: #ffeb3b;
+}
+
+.card-indicator.red {
+  background: #f44336;
+}
+
+.card-count {
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  font-weight: bold;
+  color: #ffffff;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Download Button */
+.download-button {
+  padding: 15px 40px;
+  background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+  color: #000000;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'Arial', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 
+    0 10px 20px rgba(0, 255, 136, 0.3),
+    0 0 40px rgba(0, 255, 136, 0.2);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.download-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 15px 30px rgba(0, 255, 136, 0.4),
+    0 0 60px rgba(0, 255, 136, 0.3);
+}
+
+.download-button:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.download-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.download-button.generating {
+  background: linear-gradient(135deg, #666666 0%, #444444 100%);
+  box-shadow: none;
+}
+
+.download-icon {
+  font-size: 20px;
+}
+
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Download Success Message */
+.download-success {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #00ff88 0%, #00d4ff 100%);
+  color: #000000;
+  padding: 20px 40px;
+  border-radius: 10px;
+  font-size: 18px;
+  font-weight: bold;
+  font-family: 'Arial', sans-serif;
+  box-shadow: 0 10px 30px rgba(0, 255, 136, 0.5);
+  z-index: 9999;
+  animation: successPop 0.5s ease;
+}
+
+@keyframes successPop {
+  0% {
+    transform: translate(-50%, -50%) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .futscore-card {
+    width: 320px;
+    height: 480px;
+  }
+  
+  .player-name {
+    font-size: 20px;
+  }
+  
+  .player-image-container {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .rating-circle {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .rating-number {
+    font-size: 24px;
+  }
+  
+  .stat-item {
+    padding: 8px 12px;
+  }
+  
+  .download-button {
+    padding: 12px 30px;
+    font-size: 14px;
+  }
+}
+
+/* CSS Variables for dynamic rating colors */
+.futscore-card {
+  --rating-color: #00ff88;
+}
+
+.futscore-card[data-rating="9"],
+.futscore-card[data-rating="10"] {
+  --rating-color: #00ff88;
+}
+
+.futscore-card[data-rating="8"] {
+  --rating-color: #52ff52;
+}
+
+.futscore-card[data-rating="7"] {
+  --rating-color: #00d4ff;
+}
+
+.futscore-card[data-rating="6"] {
+  --rating-color: #ffd700;
+}
+
+.futscore-card[data-rating="5"] {
+  --rating-color: #ff9500;
+}
+
+.futscore-card[data-rating="4"],
+.futscore-card[data-rating="3"],
+.futscore-card[data-rating="2"],
+.futscore-card[data-rating="1"] {
+  --rating-color: #ff4444;
+}
