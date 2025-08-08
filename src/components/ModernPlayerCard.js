@@ -53,11 +53,12 @@ function ModernPlayerCard({ matchData }) {
     setIsDownloading(true);
     try {
       const canvas = await html2canvas(cardRef.current, {
-        backgroundColor: null,
-        scale: 2,
+        backgroundColor: '#0b1023',
+        scale: 3,
         logging: false,
         useCORS: true,
-        allowTaint: true
+        allowTaint: true,
+        foreignObjectRendering: true
       });
       
       const link = document.createElement('a');
@@ -177,6 +178,9 @@ function ModernPlayerCard({ matchData }) {
               <span className="stat-number">{matchData.foulsSuffered}</span>
             </div>
           </div>
+
+          {/* Marca d'água */}
+          <div className="watermark">FutScore</div>
 
           <div className="flip-hint" onClick={() => setIsFlipped(!isFlipped)}>
             <span>↻</span>
